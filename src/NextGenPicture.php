@@ -3,7 +3,6 @@
 class NextGenPicture
 {
     private static $config = [
-        'debug' => false,
         'relative_path' => '../cache/',
         'cache_dir' => __DIR__ . '/../cache/',
         'force_generate' => false,
