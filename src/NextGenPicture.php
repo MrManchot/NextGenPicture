@@ -31,6 +31,17 @@ class NextGenPicture
             }
         }
         $this->testCacheDir();
+        $this->testConfiguation();
+    }
+
+    private function testConfiguation()
+    {
+        exec('cwebp -h 2>&1', $output);
+        if (stripos($output[0], 'not found') !== false) {
+            self::setError('cwebp not install on your server : sudo apt install webp (on Ubuntu)');
+            return false;
+        }
+        return true;
     }
 
     private function testCacheDir()
@@ -289,9 +300,9 @@ class NextGenPicture
         }
         $srcsets = [];
         foreach ($size as $ratio => $width) {
-            $srcsets[] = $this->relative_path . $width . '.' . $extension . ' ' . $ratio . 'x';
+            $srcsets[] = $this->relative_path . $width . '.' . $extension . (count($size) > 1 ? ' ' . $ratio . 'x' : '');
         }
 
-        return '  <source ' . $type . $media . ' srcset="' . implode(', ', $srcsets) . '">' . PHP_EOL;
+        return '  <source ' . $type . $media . 'srcset="' . implode(', ', $srcsets) . '">' . PHP_EOL;
     }
 }
