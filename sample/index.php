@@ -1,15 +1,8 @@
 <?php
 
-// TODO : 
-// Try Catch + Si ca merde => Tester les valeurs a la con
-// README
-// Tester si WebP Installé
-// Meta desc du sample a remplir
-# sudo apt install imagemagick jpegoptim pngquant webp
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Meta description +  Github
+// README : sudo apt install imagemagick jpegoptim pngquant webp
+// Packagist
 
 ?>
 <!doctype html>
@@ -20,12 +13,14 @@ error_reporting(E_ALL);
   <title>NextGenPicture</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>xmp { padding:20px; background:#eee; }</style>
 </head>
 
 <body>
 
   <?php
 
+  ini_set('display_errors', 1);
   require '../src/NextGenPicture.php';
 
   # Minimal Configuration
@@ -33,7 +28,6 @@ error_reporting(E_ALL);
 
   # All Options
   $ngp = new NextGenPicture([
-    'debug' => true,
     'relative_path' => '../cache/',
     'cache_dir' => __DIR__ . '/../cache/',
     'force_generate' => false,
@@ -44,7 +38,7 @@ error_reporting(E_ALL);
 
   $html = $ngp->load('sample.jpg')
     ->setMaxDisplaySize([800, 600])
-    ->setResponsive([1024 => 375, 360 => [360, 360]])
+    ->setResponsive([1024 => 375])
     ->setAlt('Alt of the picture')
     ->setId('picture-id')
     ->setClass(['picture-first-class', 'picture-second-class'])
@@ -56,7 +50,7 @@ error_reporting(E_ALL);
   ?>
 
   <footer>
-    Photo of <a href="https://curioso.photography/">Curioso Photography</a> from <a href="https://www.pexels.com">Pexels</a>
+    Photo by <a href="https://curioso.photography/">Curioso Photography</a> from <a href="https://www.pexels.com">Pexels</a>
   </footer>
 </body>
 
