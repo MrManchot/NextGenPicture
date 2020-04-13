@@ -1,22 +1,19 @@
-<?php
-
-// Meta description +  Github
-// README : sudo apt install imagemagick jpegoptim pngquant webp
-// Packagist
-
-?>
 <!doctype html>
 <html>
 
 <head>
   <meta charset="utf-8">
   <title>NextGenPicture</title>
-  <meta name="description" content="">
+  <meta name="description" content="Generate your images in WebP format in different sizes plus the appropriate HTML tag. Manage: media requests, device pixel ratio and 100% compatibility.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>xmp { padding:20px; background:#eee; }</style>
 </head>
 
 <body>
+
+<h1>NextGenPicture</h1>
+<p>Generate your images in WebP format in different sizes plus the appropriate HTML tag.</p>
+<p>Manage: media requests, device pixel ratio and 100% compatibility.</p>
 
   <?php
 
