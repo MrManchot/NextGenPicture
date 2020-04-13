@@ -44,7 +44,7 @@ class NextGenPicture
         foreach ($commands as $command => $package) {
             exec($command . ' -h 2>&1', $output);
             if (stripos($output[0], 'not found') !== false) {
-                self::setError('cwebp not install on your server : sudo apt install ' . $package . ' (on Ubuntu)');
+                throw new Exception($command . ' not install on your server : sudo apt install ' . $package . ' (on Ubuntu)');
                 $configuraton = false;
             }
         }
@@ -56,13 +56,13 @@ class NextGenPicture
         if (!is_dir(self::$config['cache_dir'])) {
             @mkdir(self::$config['cache_dir']);
             if (!is_dir(self::$config['cache_dir'])) {
-                self::setError('Cache directory does not exist : ' . self::$config['cache_dir']);
+                throw new Exception('Cache directory does not exist : ' . self::$config['cache_dir']);
             }
         }
         if (!is_writable(self::$config['cache_dir'])) {
             @chmod(self::$config['cache_dir'], 755);
             if (!is_writable(self::$config['cache_dir'])) {
-                self::setError('Cache directory is not writable : ' . self::$config['cache_dir']);
+                throw new Exception('Cache directory is not writable : ' . self::$config['cache_dir']);
             }
         }
     }
@@ -82,7 +82,7 @@ class NextGenPicture
         } elseif ($exif == IMAGETYPE_JPEG) {
             $this->extension = 'jpg';
         } else {
-            self::setError('This file format is not allowed : ' . $this->file);
+            throw new Exception('This file format is not allowed : ' . $this->file);
         }
     }
 
@@ -93,40 +93,43 @@ class NextGenPicture
         return $this;
     }
 
-
-    private static function setError($message)
+    private function tryLoadFile($file)
     {
-        if (self::$config['debug']) {
-            echo $message;
-            die();
+        if (!file_exists($file)) {
+            $file_content = @file_get_contents($file);
+            if (strlen($file_content)) {
+                $local_file = self::$config['cache_dir'] . uniqid() . '.tmp';
+                file_put_contents($local_file, $file_content);
+                if (file_exists($local_file)) {
+                    $file = $local_file;
+                } else {
+                    $file = false;
+                }
+            } else {
+                $file = false;
+            }
         }
+        return $file;
+    }
+
+    public function reinit()
+    {
+        $this->getExtension();
+        $this->getSize();
+        $this->setCompatibility();
+        $this->setAlt()->setId()->setClass()->setAttributes()->setMaxDisplaySize()->setResponsive();
+        $this->sizes = [];
     }
 
     public function load($file)
     {
-        $file_exist = true;
-        if (!file_exists($file)) {
-            $file_content = file_get_contents($file);
-            if (strlen($file_content)) {
-                $local_file = self::$config['cache_dir'] . uniqid() . '.tmp';
-                file_put_contents($local_file, $file_content);
-            }
-            if (file_exists($local_file)) {
-                $file = $local_file;
-            } else {
-                $file_exist = false;
-            }
-        }
-        if ($file_exist) {
+        $file = $this->tryLoadFile($file);
+        if ($file) {
             $this->file = $file;
             $this->basename = md5_file($this->file);
-            $this->getExtension();
-            $this->getSize();
-            $this->setCompatibility();
-            $this->setAlt()->setId()->setClass()->setAttributes()->setMaxDisplaySize()->setResponsive();
-            $this->sizes = [];
+            $this->reinit();
         } else {
-            self::setError('File does not exit : ' . $file);
+            throw new Exception('File does not exit : ' . $file);
         }
         return $this;
     }
@@ -136,7 +139,7 @@ class NextGenPicture
         if (is_numeric($quality) && $quality >= 0 && $quality <= 100) {
             return intval($quality);
         } else {
-            self::setError('The quality value must be between 0 and 100');
+            throw new Exception('The quality value must be between 0 and 100');
             return self::$config['quality'];
         }
     }
