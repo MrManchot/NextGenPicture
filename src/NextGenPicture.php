@@ -36,12 +36,19 @@ class NextGenPicture
 
     private function testConfiguation()
     {
-        exec('cwebp -h 2>&1', $output);
-        if (stripos($output[0], 'not found') !== false) {
-            self::setError('cwebp not install on your server : sudo apt install webp (on Ubuntu)');
-            return false;
+        $configuraton = true;
+        $commands = [
+            'convert' => 'imagemagick',
+            'cwebp' => 'webp'
+        ];
+        foreach ($commands as $command => $package) {
+            exec($command . ' -h 2>&1', $output);
+            if (stripos($output[0], 'not found') !== false) {
+                self::setError('cwebp not install on your server : sudo apt install ' . $package . ' (on Ubuntu)');
+                $configuraton = false;
+            }
         }
-        return true;
+        return $configuraton;
     }
 
     private function testCacheDir()
