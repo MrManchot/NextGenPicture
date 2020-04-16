@@ -1,0 +1,27 @@
+{
+    "name": "cmouleyre/next-gen-picture",
+    "description": "Generate your images in WebP format in different sizes plus the appropriate HTML tag. Manage: media requests, device pixel ratio and 100% compatibility.",
+    "keywords": [
+        "php",
+        "picture",
+        "pixel-ratio",
+        "image",
+        "optimizer",
+        "webp"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cédric Mouleyre",
+            "email": "mouleyrecedric@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "NextGenPicture": "src"
+        }
+    },
+    "require": {
+        "php": ">=7"
+    }
+}

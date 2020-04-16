@@ -16,3 +16,4 @@ sudo apt install jpegoptim pngquant
 
 ## Usage
 
+Soon...
