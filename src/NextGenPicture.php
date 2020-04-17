@@ -30,7 +30,7 @@ class NextGenPicture
             }
         }
         $this->testCacheDir();
-        $this->testConfiguation();
+        // $this->testConfiguation();
     }
 
     private function testConfiguation()
