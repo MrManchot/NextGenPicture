@@ -6,6 +6,7 @@ class NextGenPicture
         'relative_path' => '../cache/',
         'cache_dir' => __DIR__ . '/../cache/',
         'force_generate' => false,
+        'dev' => false,
         'quality' => 85,
         'max_pixel_ratio' => 3
     ];
@@ -30,24 +31,6 @@ class NextGenPicture
             }
         }
         $this->testCacheDir();
-        // $this->testConfiguation();
-    }
-
-    private function testConfiguation()
-    {
-        $configuraton = true;
-        $commands = [
-            'convert' => 'imagemagick',
-            'cwebp' => 'webp'
-        ];
-        foreach ($commands as $command => $package) {
-            exec($command . ' -h 2>&1', $output);
-            if (stripos($output[0], 'not found') !== false) {
-                throw new Exception($command . ' not install on your server : sudo apt install ' . $package . ' (on Ubuntu)');
-                $configuraton = false;
-            }
-        }
-        return $configuraton;
     }
 
     private function testCacheDir()
@@ -55,13 +38,17 @@ class NextGenPicture
         if (!is_dir(self::$config['cache_dir'])) {
             @mkdir(self::$config['cache_dir']);
             if (!is_dir(self::$config['cache_dir'])) {
-                throw new Exception('Cache directory does not exist : ' . self::$config['cache_dir']);
+                if (self::$config['dev']) {
+                    throw new Exception('Cache directory does not exist : ' . self::$config['cache_dir']);
+                }
             }
         }
         if (!is_writable(self::$config['cache_dir'])) {
             @chmod(self::$config['cache_dir'], 755);
             if (!is_writable(self::$config['cache_dir'])) {
-                throw new Exception('Cache directory is not writable : ' . self::$config['cache_dir']);
+                if (self::$config['dev']) {
+                    throw new Exception('Cache directory is not writable : ' . self::$config['cache_dir']);
+                }
             }
         }
     }
@@ -81,7 +68,9 @@ class NextGenPicture
         } elseif ($exif == IMAGETYPE_JPEG) {
             $this->extension = 'jpg';
         } else {
-            throw new Exception('This file format is not allowed : ' . $this->file);
+            if (self::$config['dev']) {
+                throw new Exception('This file format is not allowed : ' . $this->file);
+            }
         }
     }
 
@@ -128,7 +117,9 @@ class NextGenPicture
             $this->basename = md5_file($this->file);
             $this->reinit();
         } else {
-            throw new Exception('File does not exit : ' . $file);
+            if (self::$config['dev']) {
+                throw new Exception('File does not exit : ' . $file);
+            }
         }
         return $this;
     }
