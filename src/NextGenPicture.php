@@ -165,13 +165,14 @@ class NextGenPicture
 
     private function getWidth($width, $height)
     {
-        $width_ratio = $width / $this->original_width;
-        $height_ratio = $height / $this->original_height;
-        if ($height_ratio < $width_ratio) {
-            return $this->original_width  * $height_ratio;
-        } else {
-            return $width;
+        if (isset($this->original_width) && isset($this->original_height)) {
+            $width_ratio = $width / $this->original_width;
+            $height_ratio = $height / $this->original_height;
+            if ($height_ratio < $width_ratio) {
+                return $this->original_width  * $height_ratio;
+            }
         }
+        return $width;
     }
 
     private function getAllSizes()
