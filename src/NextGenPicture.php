@@ -265,6 +265,11 @@ class NextGenPicture
 
     public function display()
     {
+        
+        if (!isset($this->file)) {
+            return '';
+        }
+        
         $this->process();
         $this->relative_path = self::$config['relative_path'] . $this->basename . '_';
 
