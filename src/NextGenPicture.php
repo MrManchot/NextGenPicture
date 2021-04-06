@@ -84,17 +84,20 @@ class NextGenPicture
     private function tryLoadFile($file)
     {
         if (!file_exists($file)) {
-            $file_content = @file_get_contents($file);
-            if (strlen($file_content)) {
-                $local_file = self::$config['cache_dir'] . uniqid() . '.tmp';
-                file_put_contents($local_file, $file_content);
-                if (file_exists($local_file)) {
-                    $file = $local_file;
+            $local_file = self::$config['cache_dir'] . md5_file($file) . '.tmp';
+            if (file_exists($local_file)) {
+                $file = $local_file;
+            } else {
+                $file_content = @file_get_contents($file);
+                if (strlen($file_content)) {
+                    file_put_contents($local_file, $file_content);
+                    if (file_exists($local_file)) {
+                        $file = $local_file;
+                    }
+                    $file = false;
                 } else {
                     $file = false;
                 }
-            } else {
-                $file = false;
             }
         }
         return $file;
