@@ -84,7 +84,7 @@ class NextGenPicture
     private function tryLoadFile($file)
     {
         if (!file_exists($file)) {
-            $local_file = self::$config['cache_dir'] . md5_file($file) . '.tmp';
+            $local_file = self::$config['cache_dir'] . md5($file) . '.tmp';
             if (file_exists($local_file)) {
                 $file = $local_file;
             } else {
