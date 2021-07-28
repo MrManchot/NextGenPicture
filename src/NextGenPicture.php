@@ -93,8 +93,9 @@ class NextGenPicture
                     file_put_contents($local_file, $file_content);
                     if (file_exists($local_file)) {
                         $file = $local_file;
+                    } else {
+                        $file = false;
                     }
-                    $file = false;
                 } else {
                     $file = false;
                 }
