@@ -43,7 +43,7 @@ composer require cmouleyre/next-gen-picture
     ->setClass(['picture-first-class', 'picture-second-class'])
     ->setAttributes(['data-first' => 'toto', 'data-second' => 'tata'])
     ->display();
-```php
+```
 
 Result :
 
@@ -55,4 +55,4 @@ Result :
   <source srcset="../cache/a6a5ac1817569518be673efdc2ac46f0_800.jpg">
   <img src="../cache/a6a5ac1817569518be673efdc2ac46f0_800.jpg" class="picture-first-class picture-second-class" id="picture-id" alt="Alt of the picture" data-first="toto" data-second="tata" >
 </picture>
-```html
+```
