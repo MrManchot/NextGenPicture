@@ -44,7 +44,7 @@ class NextGenPicture
             }
         }
         if (!is_writable(self::$config['cache_dir'])) {
-            @chmod(self::$config['cache_dir'], 755);
+            @chmod(self::$config['cache_dir'], 777);
             if (!is_writable(self::$config['cache_dir'])) {
                 if (self::$config['dev']) {
                     throw new Exception('Cache directory is not writable : ' . self::$config['cache_dir']);
@@ -91,11 +91,8 @@ class NextGenPicture
                 $file_content = @file_get_contents($file);
                 if (strlen($file_content)) {
                     file_put_contents($local_file, $file_content);
-                    if (file_exists($local_file)) {
-                        $file = $local_file;
-                    } else {
-                        $file = false;
-                    }
+                    chmod($local_file, 777);
+                    $file = $local_file;
                 } else {
                     $file = false;
                 }
@@ -115,6 +112,7 @@ class NextGenPicture
 
     public function load($file)
     {
+        $this->initial_file = $file;
         $file = $this->tryLoadFile($file);
         if ($file) {
             $this->file = $file;
@@ -249,6 +247,8 @@ class NextGenPicture
                             $this->addCmd('pngquant ' . $export . ' -o ' . $export . ' --force');
                         }
                     }
+                    $this->addCmd('chmod 777 ' . $export);
+                    $this->addCmd('chmod 777 ' . $export_base . 'webp');
                 }
             }
         }
@@ -269,13 +269,25 @@ class NextGenPicture
 
     public function display()
     {
-        
+
         if (!isset($this->file)) {
-            return '';
+            $src = $this->initial_file;
+        } else {
+            $this->process();
+            $this->relative_path = self::$config['relative_path'] . $this->basename . '_';
+            $src = $this->relative_path . $this->sizes['original'][1] . '.' . ($this->compatibility ? $this->extension : 'webp');
         }
-        
-        $this->process();
-        $this->relative_path = self::$config['relative_path'] . $this->basename . '_';
+
+        $html_img = '  <img src="' . $src  . '" ' .
+            ($this->class ? 'class="' . $this->class . '" ' : '') .
+            ($this->id ? 'id="' . $this->id . '" ' : '') .
+            'alt="' . $this->alt . '" ' .
+            $this->attributes .
+            '>' . PHP_EOL;
+
+        if (!isset($this->file)) {
+            return $html_img;
+        }
 
         $html =  '<picture>' . PHP_EOL;
         foreach ($this->sizes as $breakpoint => $size) {
@@ -286,14 +298,8 @@ class NextGenPicture
                 $html .= $this->getSource($breakpoint, $size, $this->extension);
             }
         }
-        $src = $this->relative_path . $this->sizes['original'][1] . '.' . ($this->compatibility ? $this->extension : 'webp');
-        $html .= '  <img src="' . $src  . '" ' .
-            ($this->class ? 'class="' . $this->class . '" ' : '') .
-            ($this->id ? 'id="' . $this->id . '" ' : '') .
-            'alt="' . $this->alt . '" ' .
-            $this->attributes .
-            '>' . PHP_EOL;
 
+        $html .= $html_img;
         $html .= '</picture>' . PHP_EOL;
         return $html;
     }
