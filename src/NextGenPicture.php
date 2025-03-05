@@ -8,7 +8,8 @@ class NextGenPicture
         'force_generate' => false,
         'dev' => false,
         'quality' => 85,
-        'max_pixel_ratio' => 3
+        'max_pixel_ratio' => 3,
+        'webp_enabled' => true
     ];
     public $breakpoints = [];
     public $alt;
@@ -171,7 +172,7 @@ class NextGenPicture
             $width_ratio = $width / $this->original_width;
             $height_ratio = $height / $this->original_height;
             if ($height_ratio < $width_ratio) {
-                return $this->original_width  * $height_ratio;
+                return $this->original_width * $height_ratio;
             }
         }
         return $width;
@@ -240,6 +241,10 @@ class NextGenPicture
                 $missing_file = !file_exists($export) || !file_exists($export_base . 'webp');
                 if ($missing_file || self::$config['force_generate']) {
                     $this->addCmd('convert ' . $this->file . ' -resize ' . $width . ' ' . $export);
+                    if (self::$config['webp_enabled']) {
+                        $this->addCmd('cwebp -q ' . self::$config['quality'] . ' ' . $export . ' -o ' . $export_base . 'webp');
+                        $this->addCmd('chmod 777 ' . $export_base . 'webp');
+                    }
                     $this->addCmd('cwebp -q ' . self::$config['quality'] . ' ' . $export . ' -o ' . $export_base . 'webp');
                     if ($this->compatibility) {
                         if ($this->extension == 'jpg') {
@@ -249,7 +254,6 @@ class NextGenPicture
                         }
                     }
                     $this->addCmd('chmod 777 ' . $export);
-                    $this->addCmd('chmod 777 ' . $export_base . 'webp');
                 }
             }
         }
@@ -257,7 +261,7 @@ class NextGenPicture
             foreach ($this->cmd as $line) {
                 exec($line, $output);
                 if ($output) {
-                    $this->output[]  = implode("\n", $output);
+                    $this->output[] = implode("\n", $output);
                 }
             }
         }
@@ -279,7 +283,7 @@ class NextGenPicture
             $src = $this->relative_path . $this->sizes['original'][1] . '.' . ($this->compatibility ? $this->extension : 'webp');
         }
 
-        $html_img = '  <img src="' . $src  . '" ' .
+        $html_img = '  <img src="' . $src . '" ' .
             ($this->class ? 'class="' . $this->class . '" ' : '') .
             ($this->id ? 'id="' . $this->id . '" ' : '') .
             'alt="' . $this->alt . '" ' .
@@ -290,9 +294,11 @@ class NextGenPicture
             return $html_img;
         }
 
-        $html =  '<picture>' . PHP_EOL;
-        foreach ($this->sizes as $breakpoint => $size) {
-            $html .= $this->getSource($breakpoint, $size);
+        $html = '<picture>' . PHP_EOL;
+        if (self::$config['webp_enabled']) {
+            foreach ($this->sizes as $breakpoint => $size) {
+                $html .= $this->getSource($breakpoint, $size);
+            }
         }
         if ($this->compatibility) {
             foreach ($this->sizes as $breakpoint => $size) {
