@@ -238,14 +238,13 @@ class NextGenPicture
             foreach ($sizes as $width) {
                 $export_base = self::$config['cache_dir'] . $this->basename . '_' . $width . '.';
                 $export = $export_base . $this->extension;
-                $missing_file = !file_exists($export) || !file_exists($export_base . 'webp');
+                $missing_file = !file_exists($export);
                 if ($missing_file || self::$config['force_generate']) {
                     $this->addCmd('convert ' . $this->file . ' -resize ' . $width . ' ' . $export);
                     if (self::$config['webp_enabled']) {
                         $this->addCmd('cwebp -q ' . self::$config['quality'] . ' ' . $export . ' -o ' . $export_base . 'webp');
                         $this->addCmd('chmod 777 ' . $export_base . 'webp');
                     }
-                    $this->addCmd('cwebp -q ' . self::$config['quality'] . ' ' . $export . ' -o ' . $export_base . 'webp');
                     if ($this->compatibility) {
                         if ($this->extension == 'jpg') {
                             $this->addCmd('jpegoptim ' . $export . ' --strip-all -o  --m ' . self::$config['quality']);
